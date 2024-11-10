@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>電子木魚</title>
+    <link rel="icon" href="woodenfishicon.png" type="image/x-icon">
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        p {
+            text-align: center;
+        }
+
+        .count{
+            font-size: 50px;
+        }
+
+        .hint{
+            color: rgb(105, 104, 104);
+        }
+
+        .button-container {
+            text-align: center;
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #woodenfish {
+            cursor: pointer;
+        }
+
+        .plusOne {
+            color: #ffffff;
+            font-size: 24px;
+            position: absolute;
+            top: -50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            animation: fadeOut 1s ease forwards;
+        }
+
+        .auto {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 300px;
+        }
+
+        .auto p {
+            margin-right: 10px;
+        }
+
+        .switch {
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+            background-color: #ccc;
+            border-radius: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .switch::before {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background-color: rgb(255, 255, 255);
+            border-radius: 50%;
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .switch.active {
+            background-color: #66bb6a;
+        }
+
+        .switch.active::before {
+            transform: translateX(30px);
+            background-color: green;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                opacity: 1;
+                transform: translateX(-40%) translateY(30px);
+            }
+            100% {
+                opacity: 0;
+                transform: translateX(-40%) translateY(-20px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>木魚</h1>
+    <p class="count">功德數：<span id="clickTimes">0</span></p><br>
+    <p class="hint">左鍵點擊木魚或按下空白鍵</p>
+
+    <div class="button-container">
+        <img id="woodenfish" src="woodenfish2.png" width="300px" height="300px" onclick="plus()">
+    </div>
+    <div class="auto">
+        <p>自動加功德</p>
+        <div class="switch" id="switchButton" onclick="toggleAutoPlus()"></div>
+    </div>
+
+    <audio id="click-sound" src="WoodTap.mp3" preload="auto"></audio>
+
+    <script>
+        var clickTimes = 0;
+
+        function plus() {
+            clickTimes += 1;
+
+            var sound = document.getElementById("click-sound");
+            sound.currentTime = 0;
+            sound.play();
+
+            document.getElementById("clickTimes").textContent = clickTimes;
+
+            var div = document.createElement('div');
+            div.className = 'plusOne';
+            div.textContent = '功德+1';
+
+            document.querySelector(".button-container").appendChild(div);
+
+            div.addEventListener('animationend', () => {
+                div.remove();
+            });
+
+            var woodenfish = document.getElementById("woodenfish");
+            woodenfish.style.transform = "scale(0.9)";
+            setTimeout(function() {
+                woodenfish.style.transform = "scale(1)"; 
+            }, 100);
+        }
+
+        var autoInterval = null;
+        var autoPlusActive = false;
+
+        function toggleAutoPlus() {
+            var switchButton = document.getElementById("switchButton");
+            if (autoPlusActive) {
+                clearInterval(autoInterval);
+                autoPlusActive = false;
+                switchButton.classList.remove('active');
+            } else {
+                autoInterval = setInterval(plus, 500);
+                autoPlusActive = true;
+                switchButton.classList.add('active');
+            }
+        }
+
+        var woodenfish = document.getElementById('woodenfish');
+
+        woodenfish.addEventListener('mousedown', function() {
+            woodenfish.style.transform = "scale(0.9)";
+        });
+
+        woodenfish.addEventListener('mouseup', function() {
+            woodenfish.style.transform = "scale(1)";
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ' || event.keyCode === 32) {
+                woodenfish.style.transform = "scale(0.9)";
+            }
+        });
+
+        document.addEventListener('keyup', function(event) {
+            if (event.key === ' ' || event.keyCode === 32) {
+                woodenfish.style.transform = "scale(1)";
+                document.getElementById('woodenfish').click();
+            }
+        });
+
+    </script>
+</body>
+</html>
